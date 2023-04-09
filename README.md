@@ -46,7 +46,7 @@ Automatically update the packages via: <br><i><b>npm update --save </b></i> <br>
 
 - <b>KOFI_TOKEN:</b> Replace the <i>"KOFI API TOKEN"</i> with your [Verification Token](https://ko-fi.com/manage/webhooks?src=sidemenu) (under Advanced)
 
-<b>💻[Joke Command API](KawBot/slashcommands/joke.js)</b>
+<b>💻[Joke Command API](KawBot/SlashCommands/joke.js)</b>
 
 - Update the <b>'User-Agent': 'string'</b> header with your username. [Example](https://icanhazdadjoke.com/api#custom-user-agent)
 
