@@ -35,12 +35,12 @@ Automatically update the packages via: <br><i><b>npm update --save </b></i> <br>
 <br> <br>
 </p></center></div>
 
-<b>⚙[Config](KawBot/config.json) </b>
+<b>⚙[Config](https://github.com/Krowatic/KawBot/blob/main/config.json) </b>
 
 - Add in the associated Channel ID(s).
 - Add in your associated Guild ID(s).
 
-<b>⚙[.Env](KawBot/.env)</b>
+<b>⚙[.Env](https://github.com/Krowatic/KawBot/blob/main/.env)</b>
 
 - <b>CLIENT_TOKEN:</b> Replace the <i>"Discord Bot Token"</i> with your Client Application Token.
 
