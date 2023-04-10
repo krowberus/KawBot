@@ -22,7 +22,7 @@ This bot's functionality is ideally set to work on a single Discord Guild. This 
 
 <div align="center"><center><p> 
 Please keep in mind that I am uploading all files strictly <i><b>as is</i></b>. <br>
-When working with these files, please update the following:</p></center></div>
+When working with these files, please install or update the following:</p></center></div>
 
 <b>📦Node Packages:</b>
 - Discord.js 
@@ -53,9 +53,6 @@ Automatically update the packages via: <br><i><b>npm update --save </b></i> <br>
 <div align="center">
   <center><h1> Methods of Contact</h1></center>
 </div>
-For any questions or concerns regarding this project, you may:<br>
-
-📧[E-Mail Me](mailto:krowatic@gmail.com?subject=[GitHub]%20KawBot%20Info)<br>
 
 To follow me on other social media:<br>
 💻[Socials](https://campsite.bio/krowatic)<br>
