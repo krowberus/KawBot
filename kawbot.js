@@ -192,226 +192,140 @@ kofi.use(express.static('public'));
 kofi.disable('x-powered-by');
 
 class KofiWebhook extends EventEmitter {
-    listen() {
-        kofi.post('/', async (req, res) => {
+	listen() {
+		kofiApp.post('/', async (req, res) => {
 
-            if (req.body.data) {
-                req.body = JSON.parse(req.body.data);
-            };
+			if (req.body.data) {
+				req.body = JSON.parse(req.body.data);
+			}
 
-            var kofiData = req.body;
-            var amount = kofiData.amount;
-            var timestamp = kofiData.timestamp;
-            var senderName = kofiData.from_name;
-            var kofiMessage = kofiData.message;
-            var isPublic = kofiData.is_public;
-            var paymentType = kofiData.type;
-            var messageID = kofiData.message_id;
-            var paymentID = kofiData.kofi_transaction_id;
-            var verifyId = kofiData.verification_token;
-            var isSubscription = kofiData.is_subscription_payment;
+			const kofiData = req.body;
+			const amount = kofiData.amount;
+			const timestamp = kofiData.timestamp;
+			const senderName = kofiData.from_name;
+			const kofiMessage = kofiData.message;
+			const isPublic = kofiData.is_public;
+			const paymentType = kofiData.type;
+			const messageID = kofiData.message_id;
+			const paymentID = kofiData.kofi_transaction_id;
+			const verifyId = kofiData.verification_token;
+			const isSubscription = kofiData.is_subscription_payment;
 
-            const verifyToken = process.env.KOFI_TOKEN
+			const verifyKofiToken = process.env.KOFI_TOKEN;
 
-            if (verifyId !== verifyToken) { 
-                return res.status(401).end(),
-                console.log(`[Ko-Fi Webhook]: An invalid token was provided.`)
-            }
+			if (verifyId !== verifyKofiToken) {
+				return res.status(401).end(),
+				console.log('[Ko-Fi Webhook]: An invalid token was provided.');
+			}
 
-            
-            if (verifyId === verifyToken) { 
 
-               await kofiTable.create({
-                    transactID: kofiData.kofi_transaction_id,
-                    senderName: kofiData.from_name,
-                    amount: kofiData.amount,
-                    kofiMessage: kofiData.message,
-                    messageID: kofiData.message_id,
-                    paymentType: kofiData.type,
-                    isPublic: kofiData.is_public,
-                    timestamp: kofiData.timestamp
-                });
-    
-    
-                res.status(200).end()
-    
-                this.emit(
-                    'donation',
-                    timestamp,
-                    amount,
-                    senderName,
-                    kofiMessage,
-                    isPublic,
-                    paymentType,
-                    paymentID,
-                    messageID
-                );
+			if (verifyId === verifyKofiToken) {
 
-                this.emit(
-                    'subscription',
-                    timestamp,
-                    amount,
-                    senderName,
-                    kofiMessage,
-                    isPublic,
-                    paymentType,
-                    paymentID,
-                    messageID,
-                    isSubscription
-                );
+				res.status(200).end();
 
-            }
+				this.emit(
+					'donation',
+					timestamp,
+					amount,
+					senderName,
+					kofiMessage,
+					isPublic,
+					paymentType,
+					paymentID,
+					messageID,
+				);
 
-        });
+				this.emit(
+					'subscription',
+					timestamp,
+					amount,
+					senderName,
+					kofiMessage,
+					isPublic,
+					paymentType,
+					paymentID,
+					messageID,
+					isSubscription,
+				);
 
-        var port = process.env.PORT || 8080
-        kofi.listen(port, '0.0.0.0', () => {
-            console.log(`\x1b[34m[Ko-Fi Webhook]:\x1b[32m Online Successfully!`);
-        })
-    }
+			}
+
+		});
+
+		const kofiport = process.env.KOFI_PORT || 8080;
+		kofiApp.listen(kofiport, '0.0.0.0', () => {
+			console.log(`\x1b[34m[Ko-Fi Webhook]:\x1b[37m Ko-Fi Online & Listening on: \x1b[32m${kofiport}`);
+		});
+	}
 }
 
-async function logKofi(timestamp, amount, senderName, kofiMessage, isPublic, paymentType, isSubscription) {
-    timestamp = new Date().toLocaleDateString('en-AEST', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-    });
+async function logKofi(timestamp, amount, senderName, kofiMessage, isPublic, paymentType) {
 
-    let time = new Date().toLocaleTimeString('en-AEST', {
-        hour: '2-digit',
-        minute: '2-digit',
-        second: '2-digit'
-    });
+	timestamp = `<t:${Math.floor(new Date().getTime() / 1000)}>`;
 
-    let kofiTime = timestamp + '\n' + time;
+	const { kofi_channel_id } = require('./config.json');
+	const kofiChannel = client.channels.cache.get(kofi_channel_id);
 
-    let kofiChannel = client.channels.cache.get(kofi_channel_id)
-    
-    if (isSubscription === true || paymentType === 'Subscription') { 
-        if (kofiMessage == "" && isPublic === true) {
+	if (!kofiChannel) {
+		return;
+	}
 
-            let noSubMessage = new MessageEmbed() 
-            .setColor('RED')
-            .addFields(
-                { name: ':inbox_tray: __Sender Name__', value: `${senderName}`, inline: true },
-                { name: ':moneybag: __Amount__', value: `$${amount}`, inline: true },
-                { name: ':notepad_spiral: __Message__', value: `[No Message]`, inline: true },
-                { name: ':timer: __Timestamp__', value: `${kofiTime}`, inline: true },
-                { name: ':information_source: __Type__', value: `${paymentType}`, inline: true },
-                { name: ':globe_with_meridians: __Source__', value: "[Ko-Fi](https://www.ko-fi.com/krow)", inline: true },
-            )
-            .setFooter({ text: "Krow's Ko-Fi Webhook", iconURL: "https://uploads-ssl.webflow.com/5c14e387dab576fe667689cf/5cbee341ae2b8813ae072f5b_Ko-fi_logo_RGB_Outline.png"})
-            kofiChannel.send({ embeds: [noSubMessage] })
-            if (!kofiChannel) { return }
+	const embedColor = {
+		Donation: 'Blue',
+		Subscription: 'Red',
+	};
 
-        } else { 
+	if (isPublic == true) {
+		const publicEmbed = new EmbedBuilder()
+			.setColor(embedColor[paymentType])
+			.addFields(
+				{ name: ':inbox_tray: __Sender Name__', value: `${senderName}`, inline: true },
+				{ name: ':moneybag: __Amount__', value: `$${amount}`, inline: true },
+				{ name: ':notepad_spiral: __Message__', value: kofiMessage || '[No Message]', inline: true },
+				{ name: ':timer: __Timestamp__', value: `${timestamp}`, inline: true },
+				{ name: ':information_source: __Type__', value: `${paymentType}`, inline: true },
+				{ name: ':globe_with_meridians: __Source__', value: '[Ko-Fi](https://www.ko-fi.com/krow)', inline: true },
+			)
+			.setFooter({ text: 'Krow\'s Ko-Fi', iconURL: 'https://uploads-ssl.webflow.com/5c14e387dab576fe667689cf/5cbee341ae2b8813ae072f5b_Ko-fi_logo_RGB_Outline.png' });
+		kofiChannel.send({ embeds: [publicEmbed] });
+	}
 
-            if (kofiMessage !== "" && isPublic === true) { 
-
-                let withSubMessage = new MessageEmbed() 
-                .setColor('RED')
-                .addFields(
-                    { name: ':inbox_tray: __Sender Name__', value: `${senderName}`, inline: true },
-                    { name: ':moneybag: __Amount__', value: `$${amount}`, inline: true },
-                    { name: ':notepad_spiral: __Message__', value: `${kofiMessage}`, inline: true },
-                    { name: ':timer: __Timestamp__', value: `${kofiTime}`, inline: true },
-                    { name: ':information_source: __Type__', value: `${paymentType}`, inline: true },
-                    { name: ':globe_with_meridians: __Source__', value: "[Ko-Fi](https://www.ko-fi.com/krow)", inline: true },
-                )
-                .setFooter({ text: "Krow's Ko-Fi Webhook", iconURL: "https://uploads-ssl.webflow.com/5c14e387dab576fe667689cf/5cbee341ae2b8813ae072f5b_Ko-fi_logo_RGB_Outline.png"})
-                kofiChannel.send({ embeds: [withSubMessage] })
-                if (!kofiChannel) { return }
-
-            }
-        } 
-
-        if (isPublic !== true) { 
-            
-            let noPubSub = new MessageEmbed() 
-            .setColor('RED')
-            .addFields(
-                { name: ':inbox_tray: __Sender Name__', value: `${senderName}`, inline: true },
-                { name: ':moneybag: __Amount__', value: `$${amount}`, inline: true },
-                { name: ':notepad_spiral: __Message__', value: `[Private]`, inline: true },
-                { name: ':timer: __Timestamp__', value: `${kofiTime}`, inline: true },
-                { name: ':information_source: __Type__', value: `${paymentType}`, inline: true },
-                { name: ':globe_with_meridians: __Source__', value: "[Ko-Fi](https://www.ko-fi.com/krow)", inline: true },
-            )
-            .setFooter({ text: "Krow's Ko-Fi Webhook", iconURL: "https://uploads-ssl.webflow.com/5c14e387dab576fe667689cf/5cbee341ae2b8813ae072f5b_Ko-fi_logo_RGB_Outline.png"})
-            kofiChannel.send({ embeds: [noPubSub] })
-            if (!kofiChannel) { return }
-
-        }
-    }; 
-
-    if (isSubscription === false || paymentType === 'Donation') { 
-        if (kofiMessage == "" && isPublic === true) { 
-
-            let noTipMessage = new MessageEmbed() 
-            .setColor('BLUE')
-            .addFields(
-                { name: ':inbox_tray: __Sender Name__', value: `${senderName}`, inline: true },
-                { name: ':moneybag: __Amount__', value: `$${amount}`, inline: true },
-                { name: ':notepad_spiral: __Message__', value: `[No Message]`, inline: true },
-                { name: ':timer: __Timestamp__', value: `${kofiTime}`, inline: true },
-                { name: ':information_source: __Type__', value: `${paymentType}`, inline: true },
-                { name: ':globe_with_meridians: __Source__', value: "[Ko-Fi](https://www.ko-fi.com/krow)", inline: true },
-            )
-            .setFooter({ text: "Krow's Ko-Fi Webhook", iconURL: "https://uploads-ssl.webflow.com/5c14e387dab576fe667689cf/5cbee341ae2b8813ae072f5b_Ko-fi_logo_RGB_Outline.png"})
-            kofiChannel.send({ embeds: [noTipMessage] })
-            if (!kofiChannel) { return }
-
-        } else { 
-            if (kofiMessage !== "" && isPublic === true) { 
-
-                let withTipMessage = new MessageEmbed() 
-                .setColor('BLUE')
-                .addFields(
-                    { name: ':inbox_tray: __Sender Name__', value: `${senderName}`, inline: true },
-                    { name: ':moneybag: __Amount__', value: `$${amount}`, inline: true },
-                    { name: ':notepad_spiral: __Message__', value: `${kofiMessage}`, inline: true },
-                    { name: ':timer: __Timestamp__', value: `${kofiTime}`, inline: true },
-                    { name: ':information_source: __Type__', value: `${paymentType}`, inline: true },
-                    { name: ':globe_with_meridians: __Source__', value: "[Ko-Fi](https://www.ko-fi.com/krow)", inline: true },
-                )
-                .setFooter({ text: "Krow's Ko-Fi Webhook", iconURL: "https://uploads-ssl.webflow.com/5c14e387dab576fe667689cf/5cbee341ae2b8813ae072f5b_Ko-fi_logo_RGB_Outline.png"})
-                kofiChannel.send({ embeds: [withTipMessage] })
-                if (!kofiChannel) { return }
-
-            }
-        };
-
-        if (isPublic !== true) { 
-            let noPubTipMessage = new MessageEmbed() 
-            .setColor('BLUE')
-            .addFields(
-                { name: ':inbox_tray: __Sender Name__', value: `${senderName}`, inline: true },
-                { name: ':moneybag: __Amount__', value: `$${amount}`, inline: true },
-                { name: ':notepad_spiral: __Message__', value: `[Private]`, inline: true },
-                { name: ':timer: __Timestamp__', value: `${kofiTime}`, inline: true },
-                { name: ':information_source: __Type__', value: `${paymentType}`, inline: true },
-                { name: ':globe_with_meridians: __Source__', value: "[Ko-Fi](https://www.ko-fi.com/krow)", inline: true },
-            )
-            .setFooter({ text: "Krow's Ko-Fi Webhook", iconURL: "https://uploads-ssl.webflow.com/5c14e387dab576fe667689cf/5cbee341ae2b8813ae072f5b_Ko-fi_logo_RGB_Outline.png"})
-            kofiChannel.send({ embeds: [noPubTipMessage] })
-            if (!kofiChannel) { return }
-        }
-    }
+	if (isPublic == false) {
+		const privateEmbed = new EmbedBuilder()
+			.setColor(embedColor[paymentType])
+			.addFields(
+				{ name: ':inbox_tray: __Sender Name__', value: '[Private]', inline: true },
+				{ name: ':moneybag: __Amount__', value: '[Private]', inline: true },
+				{ name: ':notepad_spiral: __Message__', value: '[Private]', inline: true },
+				{ name: ':timer: __Timestamp__', value: `${timestamp}`, inline: true },
+				{ name: ':information_source: __Type__', value: `${paymentType}`, inline: true },
+				{ name: ':globe_with_meridians: __Source__', value: '[Ko-Fi](https://www.ko-fi.com/krow)', inline: true },
+			)
+			.setFooter({ text: 'Krow\'s Ko-Fi', iconURL: 'https://uploads-ssl.webflow.com/5c14e387dab576fe667689cf/5cbee341ae2b8813ae072f5b_Ko-fi_logo_RGB_Outline.png' });
+		kofiChannel.send({ embeds: [privateEmbed] });
+	}
 
 }
 
 async function onDonation(timestamp, amount, senderName, kofiMessage, isPublic, messageID, paymentID, paymentType, isSubscription) {
-    try {
-        await Promise.all([
-            logKofi(timestamp, amount, senderName, kofiMessage, isPublic, messageID, paymentID, paymentType, isSubscription),
-        ]).catch(error => {
-            console.error(`${error}`)
-        });
-    } catch (error) {
-        console.warn('[Ko-Fi Webhook]: Error logging donation');
-        console.log(`[Ko-Fi Webhook]: ${error}`);
-    }
+	try {
+		await Promise.all([
+			logKofi(timestamp, amount, senderName, kofiMessage, isPublic, messageID, paymentID, paymentType, isSubscription),
+			kofiTable.create({
+				transactID: paymentID,
+				senderName: senderName,
+				amount: amount,
+				kofiMessage: kofiMessage,
+				messageID: messageID,
+				paymentType: paymentType,
+				isPublic: isPublic,
+				sentTime: timestamp,
+			}),
+		]);
+	}
+	catch (error) {
+		console.error(`[Ko-Fi Error]: ${error}`);
+	}
 }
 
 const kofiListener = new KofiWebhook();
