@@ -42,28 +42,31 @@ const kofiTable = require('./database/models/kofiTable.js');
 // ==========================================================
 //            -=[ Bot Ready Event ]=-
 // ==========================================================
+client.once('ready', async () => {
+	client.user.setActivity('The River Styx', {
+		type: ActivityType.Watching,
+	});
 
-client.once("ready", async() => {
+	try {
+		// Authenticate database & initialize models
+		await db.authenticate();
+		kofiTable.init(db);
+		console.log('\x1b[33m[Database]: \x1b[37mModel Init Status: \x1b[32mComplete ✅\n\x1b[33m[Database]: \x1b[37mAuthentication Status: \x1b[32mComplete ✅');
 
-    client.user.setActivity('In The Skies', { type: 'PLAYING' });
-
-    db.authenticate().then(() => {
-        kofiTable.init(db);
-
-        kofiTable.sync({ force: false });
-
-        console.log('\x1b[31m[Database]: \x1b[32mSuccessfully Logged In');
-
-    }).catch(err => console.log(err));
+		// Sync the models to the database.
+		await db.sync({ force: false });
+		console.log('\x1b[33m[Database]: \x1b[37mSync Status: \x1b[32mComplete ✅');
+	}
+	catch (error) {
+		console.error('\x1b[33m[Database]: \x1b[32mLogin Status: Fail ❌ ' + error);
+	}
 
     console.log(`\x1b[36m[Krowism]: \x1b[32mOnline! Flying in the Skies!`);
-
 });
 
 client.on(`guildCreate`, async (guild) => { 
     client.user.setActivity('In The Skies', { type: 'PLAYING' }),
-    console.log(`Joined ${guild.name} with ${guild.id}`);
-})
+});
 
 // ==========================================================
 //            -=[ Join/Leave Messages ]=-
