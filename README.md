@@ -1,9 +1,14 @@
 <div align="center">
   <center><h1>🤖KawBot🤖</h1></center>
 </div>
-<div align="center"><center><p>KawBot is a basic Discord.js v13 Bot that primarily focused on the recent addition of SlashCommands with some minor features. <br><br>
-This bot's functionality is ideally set to work on a single Discord Guild. This is due to the limits of how it was initially coded. <br> <br>
+<div align="center"><center>
+<p>KawBot was primarily created as a basic Discord bot written using the Discord.js v13 framework. <br>
 
+While future releases of the Discord.js framework will release, no major updates for KawBot will follow.
+
+It's main functions (highlighted below) should still function as intended if you wish to utilize them.
+
+Make sure to keep up-to-date with the future [Discord JS](https://discord.js.org/) releases
 </p></center></div>
 
 <div align="center">
@@ -11,9 +16,9 @@ This bot's functionality is ideally set to work on a single Discord Guild. This 
 </div>
 
 - Basic SlashCommand handling.<br> 
-- Welcome Messages and Leave Messages<br>
+- User Welcome Messages and Leave Messages<br>
 - SQLite3 and Sequelize Database Storage.<br> 
-- Ko-FI Webhooks via Express.js and EventEmitter.<br><br>
+- Ko-Fi to Discord Webhooks (Express & Events).<br><br>
 
 
 <div align="center">
@@ -21,18 +26,19 @@ This bot's functionality is ideally set to work on a single Discord Guild. This 
 </div>
 
 <div align="center"><center><p> 
-Please keep in mind that I am uploading all files strictly <i><b>as is</i></b>. <br>
-When working with these files, please install or update the following:</p></center></div>
+While some minor tweaks may occur here and there, keep in mind this repo will remain <b><i>as is</i></b><br>
+When working with these files, please install and update the following:</p></center></div>
 
 <b>📦Node Packages:</b>
 - Discord.js 
 - Express.js
 - Sequelize
 - SQLite3
+- Events
 <div align="center"><center><p> 
 
-Automatically update the packages via: <br><i><b>npm update --save </b></i> <br><br> Or, alternatively run the command: <br><i><b>npm install package@latest --save</b></i> 
-<br> <br>
+<b>Manually install the packages via</b>: <br><i>npm install package@latest --save</i> 
+<br><br><b>Automatically update the packages via:</b> <br><i>npm update --save </i> <br><br>
 </p></center></div>
 
 <b>⚙[Config](https://github.com/Krowatic/KawBot/blob/main/config.json) </b>
