@@ -132,9 +132,6 @@ client.on('guildMemberRemove', async member => {
 // ==========================================================
 
 client.commands = new Collection();
-client.aliases = new Collection();
-client.interactions = new Collection();
-client.cooldowns = new Collection();
 
 const slashCommands = [];
 const slashCommandFiles = fs.readdirSync('./slashcommands/').filter(file => file.endsWith('.js'));
