@@ -61,4 +61,4 @@ When working with these files, please install and update the following:</p></cen
 </div>
 
 To follow me on other social media:<br>
-💻[Socials](https://campsite.bio/krowatic)<br>
+💻[Socials](https://campsite.bio/krowatic 'https://campsite.bio/krowatic') | 📧[Email](mailto:krowatic@gmail.com?subject=[GitHub]%20KawBot%20Source%20Code 'Source Code Contact')
