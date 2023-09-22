@@ -1,53 +1,52 @@
 const { DataTypes, Model } = require('sequelize');
 
-module.exports = class kofiTable extends Model {
-    static init(sequelize){
-        return super.init({
-            kofiID: {
-                type: DataTypes.INTEGER,
-                autoIncrement: true,
-                allowNull: false,
-                primaryKey: true
-            },
-            
-            senderName: { 
-                type: DataTypes.STRING, 
-                allowNull: false 
-            },
-            
-            amount: {
-                type: DataTypes.DECIMAL, 
-                allowNull: false
-            },
-            
-            kofiMessage: { 
-                type: DataTypes.TEXT, 
-                allowNull: false
-            },
-            
-            transactID: {
-                type: DataTypes.INTEGER, 
-                allowNull: false
-            },
-            
-            messageID: {
-                type: DataTypes.INTEGER, 
-                allowNull: false
-            },
-            
-            paymentType: { 
-                type: DataTypes.STRING, 
-                allowNull: false
-            },
-            
-            isPublic: { 
-                type: DataTypes.INTEGER, 
-                allowNull: false
-            },
-        }, {
-            tableName: 'kofiTable',
-            timestamps: false,
-            sequelize
-        });
-    }
-}
+module.exports = class Kofi extends Model {
+	static init(sequelize) {
+		return super.init({
+			kofiID: {
+				type: DataTypes.INTEGER,
+				autoIncrement: true,
+				allowNull: false,
+				primaryKey: true,
+			},
+			senderName: {
+				type: DataTypes.STRING,
+				allowNull: false,
+			},
+
+			amount: {
+				type: DataTypes.DECIMAL(10, 2),
+				allowNull: false,
+			},
+
+			kofiMessage: {
+				type: DataTypes.TEXT,
+				allowNull: false,
+			},
+
+			transactID: {
+				type: DataTypes.STRING(100),
+				allowNull: false,
+			},
+
+			paymentType: {
+				type: DataTypes.STRING,
+				allowNull: false,
+			},
+
+			isPublic: {
+				type: DataTypes.INTEGER,
+				allowNull: false,
+			},
+
+			sentTime: {
+				type: DataTypes.STRING(100),
+				allowNull: false,
+			},
+		}, {
+			tableName: 'kofi',
+			timestamps: false,
+			sequelize,
+		});
+	}
+};
