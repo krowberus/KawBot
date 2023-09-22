@@ -185,20 +185,8 @@ client.on('interactionCreate', async interaction => {
 //                  -=[ Ko-Fi Webhooks ]=-
 // ==========================================================
 
-
-const corsKofiOptions = {
-	origin: ['https://www.ko-fi.com/krow', 'https://www.ko-fi.com/krowatic', 'https://www.ko-fi.com/'],
-	methods: 'POST',
-};
-const kofiLimiter = rateLimiter({
-	windowMs: 15 * 60 * 1000,
-	max: 100,
-});
-
 const kofiApp = express();
-kofiApp.use(kofiLimiter);
 kofiApp.use(express.json());
-kofiApp.use(cors(corsKofiOptions));
 kofiApp.use(express.urlencoded({ extended: true }));
 kofiApp.disable('x-powered-by');
 
