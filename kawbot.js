@@ -329,7 +329,7 @@ async function onDonation(senderName, amount, kofiMessage, transactID, type, isP
 
 const kofiListener = new KofiWebhook();
 kofiListener.listen();
-kofiListener.on(['donation', 'subscription'], onDonation);
+kofiListener.on('donation', onDonation);
 
 
 // ==========================================================
