@@ -272,14 +272,10 @@ async function logKofi(senderName, amount, kofiMessage, transactID, type, isPubl
 		timestamp = `<t:${Math.floor(new Date().getTime() / 1000)}>`;
 
 		const kofiChannelID = config.kofiChannelID;
-
-		if (!kofiChannelID) {
-			return;
-		}
 		const kofiChannel = client.channels.cache.get(kofiChannelID);
 
-		if (!kofiChannel) {
-			return console.log(`Cannot find a set Ko-Fi Channel`);
+		if (!kofiChannelID || !kofiChannel) {
+			return console.error(!kofiChannelID ? "Ko-Fi Channel ID is not defined in the config." : `Ko-Fi Channel with ID ${kofiChannelID} not found.`);
 		}
 
 		const embedColor = {
@@ -345,7 +341,7 @@ async function onDonation(senderName, amount, kofiMessage, transactID, type, isP
 
 const kofiListener = new KofiWebhook();
 kofiListener.listen();
-kofiListener.on('donation', 'subscription', onDonation);
+kofiListener.on(['donation', 'subscription'], onDonation);
 
 
 // ==========================================================
