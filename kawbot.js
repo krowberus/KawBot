@@ -65,60 +65,56 @@ client.once('ready', async () => {
 });
 
 client.on(`guildCreate`, async (guild) => { 
-    client.user.setActivity('In The Skies', { type: 'PLAYING' }),
+    client.user.setActivity('In The Skies', { type: 'PLAYING' });
 });
 
 // ==========================================================
 //            -=[ Join/Leave Messages ]=-
 // ==========================================================
 
-client.on('guildMemberAdd', async member => { 
-    const { welcomeChannel, infoChannel, rulesChannel } = require('./config.json');
+client.on('guildMemberAdd', async (member) => {
+    if (member.user.bot) return; 
+    
+    // Get ID's for the channels from the config
+    const infoChannelID = config.infoChannel;
+    const rulesChannelID = config.rulesChannel;
+	const welcomeChannelID = config.welcomeChannel;
 
- 	if (member.user.bot) return;
+	// Parse the ID to the GuildChannel Manager
+   const infoChat = member.guild.channels.cache.get(infoChannelID);
+   const rulesChat = member.guild.channels.cache.get(rulesChannelID);
+   const joinChannel = member.guild.channels.cache.get(welcomeChannelID);
 
-   const infoChat = member.guild.channels.cache.get(infoChannel);
-   const rulesChat = member.guild.channels.cache.get(rulesChannel);
+    if (!joinChannel) {
+		return console.log(`Cannot find or access that channel`);
+	}
 
     const welcomeEmbed = new MessageEmbed()
     .setTitle(`**==[** Welcome to the Nest! **]==**`)
     .setColor('#206694')
     .setDescription(`**-=========================-** \n\n :wave: Welcome ${member}! \n\n **-=========================-** \n\n :book: For our rules, check ${rulesChat} \n\n:mega: Keep up-to-date by checking out${infoChat} \n\n **-=========================-**`)
-
-    let joinChannel = member.guild.channels.cache.get(welcomeChannel);
-
-    if (!joinChannel) { 
-        return console.log(`Cannot find or access that channel`);
-    } else { 
-        if (joinChannel) { 
-            joinChannel.send({ embeds: [welcomeEmbed] }).catch(error => { 
-                console.log(error)
-            });
-        }
-    }
+  
+    joinChannel.send({ embeds: [welcomeEmbed] }).catch(error => { console.log(error)});
 
 });
 
-client.on('guildMemberRemove', async member => { 
-    const { welcomeChannel } = require('./config.json');
-
+client.on('guildMemberRemove', async (member) => {
 	if (member.user.bot) return;
+	// Get ID's for the channels from the config
+    const leaveChannelID = config.leaveChannel;
+
+	// Parse the ID to the GuildChannel Manager
+    const leaveChannel = member.guild.channels.cache.get(leaveChannelID);
+
+	if (!leaveChannel) { 
+        return console.log(`Cannot find that channel`);
+    }
+
     const leaveEmbed = new MessageEmbed()
     .setTitle(`**==[** Safe Travels, Friendo! **]==**`)
     .setColor('#E74C3C')
     .setDescription(`**-=========================-** \n\n :wave: Take Care, ${member.user.username}! \n\n **-=========================-**`)
-
-    let leaveChannel = member.guild.channels.cache.get(welcomeChannel);
-
-    if (!leaveChannel) { 
-        return console.log(`Cannot find that channel`);
-    } else { 
-        if (leaveChannel) { 
-                leaveChannel.send({ embeds: [leaveEmbed] }).catch(error => { 
-             console.log(error)
-            });
-        }
-    }
+	leaveChannel.send({ embeds: [leaveEmbed] }).catch(error => { console.log(error) });
 
 });
 
