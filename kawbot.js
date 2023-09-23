@@ -3,10 +3,10 @@ const fs = require('fs');
 require('dotenv').config();
 const express = require('express');
 const EventEmitter = require('events');
+const config = require('./config.json');
 const { REST } = require('@discordjs/rest');
 const { Routes } = require('discord-api-types/v9');
 const { Client, Intents, MessageEmbed, Collection } = require('discord.js');
-const { kofi_channel_id, clientId, guildId } = require('./config.json');
 
 const CLIENT_TOKEN = process.env.CLIENT_TOKEN;
 
@@ -75,9 +75,7 @@ client.on(`guildCreate`, async (guild) => {
 client.on('guildMemberAdd', async member => { 
     const { welcomeChannel, infoChannel, rulesChannel } = require('./config.json');
 
-    if (member == client.user) { 
-        return;
-    }
+ 	if (member.user.bot) return;
 
    const infoChat = member.guild.channels.cache.get(infoChannel);
    const rulesChat = member.guild.channels.cache.get(rulesChannel);
@@ -104,10 +102,7 @@ client.on('guildMemberAdd', async member => {
 client.on('guildMemberRemove', async member => { 
     const { welcomeChannel } = require('./config.json');
 
-    if (member == client.user) { 
-        return;
-    }
-
+	if (member.user.bot) return;
     const leaveEmbed = new MessageEmbed()
     .setTitle(`**==[** Safe Travels, Friendo! **]==**`)
     .setColor('#E74C3C')
@@ -132,6 +127,9 @@ client.on('guildMemberRemove', async member => {
 // ==========================================================
 
 client.commands = new Collection();
+
+const guildId = config.guildId;
+const clientId = config.clientId;
 
 const slashCommands = [];
 const slashCommandFiles = fs.readdirSync('./slashcommands/').filter(file => file.endsWith('.js'));
