@@ -60,6 +60,3 @@ just install and update the following:</p></center></div>
 <div align="center">
   <center><h1> Methods of Contact</h1></center>
 </div>
-
-To follow me on other social media:<br>
-💻[Socials](https://campsite.bio/krowatic 'https://campsite.bio/krowatic') | 📧[Email](mailto:krowatic@gmail.com?subject=[GitHub]%20KawBot%20Source%20Code 'Source Code Contact')
