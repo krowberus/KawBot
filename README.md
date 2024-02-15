@@ -56,7 +56,3 @@ just install and update the following:</p></center></div>
 <b>💻[Joke Command API](https://github.com/Krowatic/KawBot/blob/main/SlashCommands/joke.js)</b>
 
 - Update the <b>'User-Agent': 'string'</b> header with your username. [Example](https://icanhazdadjoke.com/api#custom-user-agent)
-
-<div align="center">
-  <center><h1> Methods of Contact</h1></center>
-</div>
